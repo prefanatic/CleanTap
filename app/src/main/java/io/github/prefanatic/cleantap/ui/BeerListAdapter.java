@@ -21,7 +21,7 @@ import rx.subjects.PublishSubject;
 
 public class BeerListAdapter extends RecyclerListAdapter<BeerStats, BeerListAdapter.ViewHolder> {
     private final Context context;
-    private PublishSubject<ClickEvent<BeerStats>> subject;
+    private PublishSubject<ClickEvent<ViewHolder, BeerStats>> subject;
 
     public BeerListAdapter(Context context) {
         this.context = context;
@@ -44,7 +44,7 @@ public class BeerListAdapter extends RecyclerListAdapter<BeerStats, BeerListAdap
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.entry_beer, parent, false));
     }
 
-    public Observable<ClickEvent<BeerStats>> selection() {
+    public Observable<ClickEvent<ViewHolder, BeerStats>> selection() {
         return subject.asObservable();
     }
 
@@ -56,7 +56,7 @@ public class BeerListAdapter extends RecyclerListAdapter<BeerStats, BeerListAdap
         public ViewHolder(View itemView) {
             super(itemView);
             RxView.clicks(itemView).subscribe(v -> {
-                subject.onNext(new ClickEvent<>(itemView, (BeerStats) itemView.getTag()));
+                subject.onNext(new ClickEvent<>(this, (BeerStats) itemView.getTag()));
             });
         }
     }

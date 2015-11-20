@@ -12,11 +12,11 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:expandedTitleMarginStart="48dp"
-            app:expandedTitleMarginEnd="64dp"
             app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
-            app:expandedTitleTextAppearance="@style/AppTheme.Title.Expanded"
             app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:expandedTitleTextAppearance="@style/AppTheme.Title.Expanded"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
@@ -39,12 +39,12 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/scrollView"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include layout="@layout/card_beer_glance"/>
 
     </android.support.v4.widget.NestedScrollView>
-
 
 
 </android.support.design.widget.CoordinatorLayout>

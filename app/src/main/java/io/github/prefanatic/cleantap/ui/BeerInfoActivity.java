@@ -1,13 +1,20 @@
 package io.github.prefanatic.cleantap.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.view.animation.PathInterpolatorCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import butterknife.Bind;
 import io.github.prefanatic.cleantap.R;
@@ -26,12 +33,15 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
     @Bind(R.id.beer_style) TextView beerStyle;
     @Bind(R.id.beer_image) ImageView beerImage;
     @Bind(R.id.beer_description) TextView beerDescription;
+    @Bind(R.id.scrollView) NestedScrollView scrollView;
 
     private BeerStats stats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupAnimations();
+
         setContentView(R.layout.activity_beer_info);
 
         stats = (BeerStats) getIntent().getSerializableExtra("beer");
@@ -47,9 +57,25 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
         toolbarLayout.setTitle(stats.beer.beer_name);
     }
 
+    private void setupAnimations() {
+        Interpolator interpolator = PathInterpolatorCompat.create(0.5f, 0.5f);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getSharedElementEnterTransition().setInterpolator(interpolator);
+            getWindow().getSharedElementExitTransition().setInterpolator(interpolator);
+        }
+    }
+
     @Override
     public void setBeerInfo(BeerExtended beer) {
-        Glide.with(this).load(beer.media.items.get(0).photo.photo_img_og).into(imageView);
+        Glide.with(this).load(beer.media.items.get(0).photo.photo_img_og).into(new GlideDrawableImageViewTarget(imageView) {
+            @Override
+            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                super.onResourceReady(resource, animation);
+
+                scrollView.smoothScrollTo(0, 500);
+            }
+        });
     }
 
     @NonNull

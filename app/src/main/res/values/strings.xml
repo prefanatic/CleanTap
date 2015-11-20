@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
 
     <string name="search_beers">Search beers...</string>
+
+    <string name="transition_beer_icon">transition_beer_icon</string>
 </resources>

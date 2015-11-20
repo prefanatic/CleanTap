@@ -3,6 +3,9 @@ package io.github.prefanatic.cleantap.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -48,10 +51,13 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
                 .subscribe(this::beerClicked));
     }
 
-    private void beerClicked(ClickEvent<BeerStats> event) {
+    private void beerClicked(ClickEvent<BeerListAdapter.ViewHolder, BeerStats> event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
         intent.putExtra("beer", event.item);
-        startActivity(intent);
+
+        ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, event.viewHolder.beerImage,
+                ViewCompat.getTransitionName(event.viewHolder.beerImage));
+        ActivityCompat.startActivity(this, intent, transitionOptions.toBundle());
     }
 
     private void searchViewEvent(TextViewEditorActionEvent event) {
