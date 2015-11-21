@@ -36,38 +36,22 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/scrollView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-            <include layout="@layout/card_beer_rating"/>
-
-            <include layout="@layout/card_beer_glance"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="2500dp"
-                android:text="Long Ass View"/>
-
-        </LinearLayout>
-
-
-    </android.support.v4.widget.NestedScrollView>
+    </android.support.v7.widget.RecyclerView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:transitionName="@string/transition_checkin_morph"
+        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_heart"
-        android:layout_gravity="bottom|end"/>
+        android:transitionName="@string/transition_checkin_morph"/>
 
 </android.support.design.widget.CoordinatorLayout>

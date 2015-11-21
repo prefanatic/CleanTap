@@ -24,6 +24,8 @@ import io.github.prefanatic.cleantap.common.ClickEvent;
 import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchView;
+import io.github.prefanatic.cleantap.ui.delegate.BeerSearchDelegate;
+import rx.functions.Func1;
 
 public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchPresenter> implements BeerSearchView {
     @Bind(R.id.recycler) RecyclerView recyclerView;
@@ -47,11 +49,13 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
                 .subscribe(this::searchViewEvent));
         watch(RxToolbar.navigationClicks(toolbar)
                 .subscribe(v -> finish()));
-        watch(beerAdapter.selection()
+        watch(beerAdapter.clickEvent()
+                .map(event -> (ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats>) event)
                 .subscribe(this::beerClicked));
     }
 
-    private void beerClicked(ClickEvent<BeerListAdapter.ViewHolder, BeerStats> event) {
+
+    private void beerClicked(ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats> event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
         intent.putExtra("beer", event.item);
 
