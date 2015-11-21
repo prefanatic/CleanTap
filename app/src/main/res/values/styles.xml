@@ -18,4 +18,10 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="TranslucentActivity" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@color/scrim</item>
+    </style>
+
 </resources>

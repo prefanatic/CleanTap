@@ -36,6 +36,9 @@
             android:name=".ui.BeerInfoActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.CheckinActivity"
+            android:theme="@style/TranslucentActivity"/>
     </application>
 
 </manifest>
