@@ -38,7 +38,8 @@ public class BeerRatingView extends FrameLayout {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.card_beer_rating, this, false);
         ButterKnife.bind(this, view);
 
-        addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        addView(view);
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     public void setValues(BeerExtended beer) {
