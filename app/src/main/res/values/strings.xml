@@ -8,4 +8,5 @@
     <string name="transition_checkin_morph">transition_checkin_morph</string>
     <string name="check_in_confirm">Check In</string>
     <string name="check_in_review_hint">Got a few words?</string>
+    <string name="check_in_rating">What do you think?</string>
 </resources>

@@ -16,13 +16,22 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:clickable="true"
+        android:elevation="20dp"
         android:paddingTop="16dp"
         android:transitionName="@string/transition_checkin_morph">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/check_in_rating"/>
 
         <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             app:dsb_max="20"
             app:dsb_min="0"/>
 

@@ -9,11 +9,18 @@ import android.widget.TextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.prefanatic.cleantap.R;
+import io.github.prefanatic.cleantap.data.RxUntappdApi;
+import io.github.prefanatic.cleantap.data.dto.Beer;
+import io.github.prefanatic.cleantap.injection.Injector;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class CheckinActivity extends Activity {
     @Bind(R.id.container) ViewGroup container;
@@ -21,11 +28,18 @@ public class CheckinActivity extends Activity {
     @Bind(R.id.confirm) TextView confirm;
     @Bind(R.id.review) EditText reviewBox;
 
+    @Inject RxUntappdApi api;
+
+    private Beer beer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
         ButterKnife.bind(this);
+        Injector.INSTANCE.getApplicationComponent().inject(this);
+
+        beer = ((Beer) getIntent().getSerializableExtra("beer"));
 
         InfoAndCheckinAnimation.setupSharedElementTransitionsFab(this, container, getResources().getDimensionPixelSize(R.dimen.dialog_corners));
 
@@ -49,12 +63,24 @@ public class CheckinActivity extends Activity {
 
     @OnClick(R.id.confirm)
     public void confirmed() {
-        dismiss(null);
+        api.checkinBeer(beer.bid, reviewBox.getText().toString(), (float) seekBar.getProgress() / 4, null, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    dismiss(null);
+                });
     }
 
     public void dismiss(View view) {
         setResult(Activity.RESULT_CANCELED);
         finishAfterTransition();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ButterKnife.unbind(this);
+        seekBar.setNumericTransformer(null);
+        super.onDestroy();
     }
 
     @Override

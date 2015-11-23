@@ -2,9 +2,9 @@ package io.github.prefanatic.cleantap;
 
 import org.junit.Test;
 
+import java.util.TimeZone;
+
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
-import io.github.prefanatic.cleantap.data.dto.BeerExtended;
-import rx.functions.Action1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,12 +21,8 @@ public class ExampleUnitTest {
 
     @Test
     public void test() {
-        api.getBeerInfo(16630)
-                .subscribe(new Action1<BeerExtended>() {
-                    @Override
-                    public void call(BeerExtended beerExtended) {
-                        System.out.println(beerExtended.beer_name + " has a rating of " + beerExtended.rating_score);
-                    }
-                });
+        TimeZone zone = TimeZone.getDefault();
+
+        System.out.println(zone.getRawOffset());
     }
 }

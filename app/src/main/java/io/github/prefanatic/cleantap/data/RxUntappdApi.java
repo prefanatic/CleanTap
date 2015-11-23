@@ -2,9 +2,11 @@ package io.github.prefanatic.cleantap.data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import io.github.prefanatic.cleantap.data.dto.BeerExtended;
 import io.github.prefanatic.cleantap.data.dto.BeerStats;
+import io.github.prefanatic.cleantap.data.dto.CheckInResponse;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
@@ -48,6 +50,13 @@ public class RxUntappdApi {
                 .map(response -> response.response.beer)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<CheckInResponse> checkinBeer(long beerId, String shout, float rating, Double geolat, Double geolng) {
+        TimeZone zone = TimeZone.getDefault();
+
+        return api.checkInBeer(authOptions, String.valueOf(zone.getRawOffset() / 3600000), zone.getID(), beerId, null, geolat, geolng, shout, String.format("%.2f", rating), null, null, null)
+                .map(response -> response.response);
     }
 
 

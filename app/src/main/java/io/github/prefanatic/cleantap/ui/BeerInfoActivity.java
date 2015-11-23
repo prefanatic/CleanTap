@@ -8,13 +8,12 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -30,8 +29,6 @@ import io.github.prefanatic.cleantap.data.dto.BeerExtended;
 import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
-import io.github.prefanatic.cleantap.ui.widget.BeerRatingView;
-import io.github.prefanatic.cleantap.util.TextFormatUtil;
 
 public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresenter> implements BeerInfoView {
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -56,24 +53,41 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
         adapter = new BeerInfoAdapter(this);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(this));
+        recycler.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(View view) {
+                startPostponedEnterTransition();
+                recycler.removeOnChildAttachStateChangeListener(this);
+            }
+
+            @Override
+            public void onChildViewDetachedFromWindow(View view) {
+
+            }
+        });
 
         adapter.addItem(stats);
+        adapter.addItem(stats.brewery);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         toolbarLayout.setTitle(stats.beer.beer_name);
 
         watch(RxToolbar.navigationClicks(toolbar).subscribe(v -> onBackPressed()));
+
+
     }
 
     @OnClick(R.id.fab)
     public void performCheckIn() {
         Intent intent = new Intent(this, CheckinActivity.class);
+        intent.putExtra("beer", stats.beer); // TODO: 11/22/2015 Change to its values so we don't have to (de)serialize this bad boy?
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this, fab, fab.getTransitionName());
         startActivity(intent, options.toBundle());
     }
 
     private void setupAnimations() {
+        postponeEnterTransition();
         Interpolator interpolator = PathInterpolatorCompat.create(0.5f, 0.5f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
