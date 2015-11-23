@@ -78,8 +78,8 @@ public class CheckinActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        ButterKnife.unbind(this);
         seekBar.setNumericTransformer(null);
+        ButterKnife.unbind(this);
         super.onDestroy();
     }
 

@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.prefanatic.cleantap.R;
-import io.github.prefanatic.cleantap.data.dto.Beer;
 import io.github.prefanatic.cleantap.data.dto.BeerStats;
 
 public class BeerGlanceView extends FrameLayout {
@@ -25,6 +24,8 @@ public class BeerGlanceView extends FrameLayout {
     @Bind(R.id.beer_style) TextView beerStyle;
     @Bind(R.id.beer_image) ImageView beerImage;
     @Bind(R.id.beer_description) TextView beerDescription;
+
+    private BeerStats stats;
 
     public BeerGlanceView(Context context) {
         this(context, null);
