@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
@@ -19,6 +21,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.jakewharton.rxbinding.support.design.widget.RxAppBarLayout;
+import com.jakewharton.rxbinding.support.v7.widget.RecyclerViewScrollEvent;
+import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 
 import butterknife.Bind;
@@ -29,16 +34,25 @@ import io.github.prefanatic.cleantap.data.dto.BeerExtended;
 import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
+import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
+import timber.log.Timber;
 
 public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresenter> implements BeerInfoView {
+    @Bind(R.id.coordinator) CoordinatorLayout coordinator;
+    @Bind(R.id.appbar_layout) AppBarLayout appbarLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.image) ImageView beerSplash;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout toolbarLayout;
     @Bind(R.id.fab) FloatingActionButton fab;
     @Bind(R.id.recycler) RecyclerView recycler;
 
+    private static final int FAB_SCROLL_THRESHOLD = 50;
+
     private BeerStats stats;
     private BeerInfoAdapter adapter;
+    private int appbarPreviousScroll = 0;
+    boolean fabIsVisible = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +87,27 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
         toolbarLayout.setTitle(stats.beer.beer_name);
 
         watch(RxToolbar.navigationClicks(toolbar).subscribe(v -> onBackPressed()));
+        watch(RxRecyclerView.scrollEvents(recycler).subscribe(this::handleFabOnScrollOnRecycler));
+        watch(RxAppBarLayout.offsetChanges(appbarLayout).subscribe(this::handleFabOnScrollOnAppBar));
 
+    }
 
+    private void handleFabOnScrollOnRecycler(RecyclerViewScrollEvent event) {
+
+    }
+
+    private void handleFabOnScrollOnAppBar(int scrollY) {
+        if (Math.abs(scrollY - appbarPreviousScroll) > FAB_SCROLL_THRESHOLD) {
+            if (fabIsVisible)
+                InfoAndCheckinAnimation.hideFab(fab);
+            else
+                InfoAndCheckinAnimation.showFab(fab);
+
+            fabIsVisible = !fabIsVisible;
+        }
+
+        Timber.d("%d", scrollY);
+        appbarPreviousScroll = scrollY;
     }
 
     @OnClick(R.id.fab)

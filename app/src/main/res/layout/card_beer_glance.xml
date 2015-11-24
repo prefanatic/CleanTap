@@ -4,7 +4,10 @@
                                     xmlns:tools="http://schemas.android.com/tools"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:layout_margin="8dp"
+                                    android:layout_marginBottom="4dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginTop="2dp"
                                     app:cardBackgroundColor="@color/white"
                                     app:contentPadding="16dp">
 
@@ -22,6 +25,7 @@
             <ImageView
                 android:id="@+id/beer_image"
                 android:layout_width="64dp"
+                android:layout_gravity="center_vertical"
                 android:layout_height="64dp"
                 android:layout_marginRight="16dp"
                 android:transitionName="@string/transition_beer_icon"/>

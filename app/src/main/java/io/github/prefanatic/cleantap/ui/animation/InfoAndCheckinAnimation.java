@@ -3,6 +3,7 @@ package io.github.prefanatic.cleantap.ui.animation;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.transition.ArcMotion;
 import android.view.View;
@@ -35,5 +36,17 @@ public class InfoAndCheckinAnimation {
         }
         activity.getWindow().setSharedElementEnterTransition(sharedEnter);
         activity.getWindow().setSharedElementReturnTransition(sharedReturn);
+    }
+
+    public static void hideFab(FloatingActionButton fab) {
+        fab.animate()
+                .translationY(fab.getHeight() + fab.getPaddingBottom() + fab.getPaddingTop())
+                .start();
+    }
+
+    public static void showFab(FloatingActionButton fab) {
+        fab.animate()
+                .translationY(0)
+                .start();
     }
 }
