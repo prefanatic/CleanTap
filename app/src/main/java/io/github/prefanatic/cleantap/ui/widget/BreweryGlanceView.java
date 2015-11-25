@@ -77,8 +77,6 @@ public class BreweryGlanceView extends FrameLayout {
 
         if (intent.resolveActivity(getContext().getPackageManager()) != null)
             getContext().startActivity(intent);
-        else
-            Timber.d("LOL");
     }
 
     @OnClick(R.id.button_web)

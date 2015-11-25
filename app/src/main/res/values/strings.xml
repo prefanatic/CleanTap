@@ -9,4 +9,5 @@
     <string name="check_in_confirm">Check In</string>
     <string name="check_in_review_hint">Got a few words?</string>
     <string name="check_in_rating">What do you think?</string>
+    <string name="search_getting_started">Search for a beer or brewery in the Toolbar to get started.</string>
 </resources>

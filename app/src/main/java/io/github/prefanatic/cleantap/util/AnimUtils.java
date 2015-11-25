@@ -18,11 +18,10 @@ package io.github.prefanatic.cleantap.util;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
-import android.content.Context;
 import android.transition.Transition;
 import android.util.ArrayMap;
 import android.util.Property;
-import android.view.animation.Interpolator;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -32,6 +31,22 @@ import java.util.ArrayList;
 public class AnimUtils {
 
     private AnimUtils() { }
+
+    public static void show(View view) {
+        if (view.getVisibility() == View.VISIBLE) return;
+        view.animate()
+                .alpha(1f)
+                .withStartAction(() -> view.setVisibility(View.VISIBLE))
+                .start();
+    }
+
+    public static void hide(View view) {
+        if (view.getVisibility() == View.GONE) return;
+        view.animate()
+                .alpha(0f)
+                .withEndAction(() -> view.setVisibility(View.GONE))
+                .start();
+    }
 
     /**
      * Linear interpolate between a and b with parameter t.

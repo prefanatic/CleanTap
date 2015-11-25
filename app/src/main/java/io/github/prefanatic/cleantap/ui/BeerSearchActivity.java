@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
@@ -13,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -26,12 +29,16 @@ import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchView;
 import io.github.prefanatic.cleantap.ui.delegate.BeerSearchDelegate;
+import io.github.prefanatic.cleantap.util.AnimUtils;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchPresenter> implements BeerSearchView {
     @Bind(R.id.recycler) RecyclerView recyclerView;
     @Bind(R.id.search) EditText searchView;
+    @Bind(R.id.appbar_layout) AppBarLayout appbarLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.help_search_info) TextView helpText;
+    @Bind(R.id.progress) ProgressBar progress;
 
     private BeerListAdapter beerAdapter;
 
@@ -47,6 +54,7 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         recyclerView.setAdapter(beerAdapter);
         recyclerView.setItemAnimator(new SlideInUpAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setNestedScrollingEnabled(false);
 
         watch(RxTextView.editorActionEvents(searchView)
                 .subscribe(this::searchViewEvent));
@@ -55,8 +63,8 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         watch(beerAdapter.clickEvent()
                 .map(event -> (ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats>) event)
                 .subscribe(this::beerClicked));
-    }
 
+    }
 
     private void beerClicked(ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats> event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
@@ -70,12 +78,19 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     private void searchViewEvent(TextViewEditorActionEvent event) {
         if (event.actionId() == EditorInfo.IME_ACTION_SEARCH || (event.keyEvent().getKeyCode() == KeyEvent.KEYCODE_ENTER && event.keyEvent().getAction() == KeyEvent.ACTION_UP)) {
             beerAdapter.clear();
+            recyclerView.setNestedScrollingEnabled(false);
             presenter.searchForBeer(searchView.getText().toString());
+
+            AnimUtils.show(progress);
+            AnimUtils.hide(helpText);
         }
     }
 
     @Override
     public void foundBeer(BeerStats beer) {
+        AnimUtils.hide(progress);
+
+        recyclerView.setNestedScrollingEnabled(true);
         beerAdapter.addItem(beer);
     }
 
