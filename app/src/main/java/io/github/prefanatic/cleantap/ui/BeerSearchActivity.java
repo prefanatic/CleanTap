@@ -1,6 +1,7 @@
 package io.github.prefanatic.cleantap.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -25,7 +26,7 @@ import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchView;
 import io.github.prefanatic.cleantap.ui.delegate.BeerSearchDelegate;
-import rx.functions.Func1;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchPresenter> implements BeerSearchView {
     @Bind(R.id.recycler) RecyclerView recyclerView;
@@ -40,9 +41,11 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         setContentView(R.layout.activity_beer_search);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        toolbar.getNavigationIcon().setTint(Color.BLACK);
 
         beerAdapter = new BeerListAdapter(this);
         recyclerView.setAdapter(beerAdapter);
+        recyclerView.setItemAnimator(new SlideInUpAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         watch(RxTextView.editorActionEvents(searchView)
@@ -66,7 +69,7 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
 
     private void searchViewEvent(TextViewEditorActionEvent event) {
         if (event.actionId() == EditorInfo.IME_ACTION_SEARCH || (event.keyEvent().getKeyCode() == KeyEvent.KEYCODE_ENTER && event.keyEvent().getAction() == KeyEvent.ACTION_UP)) {
-            // TODO: 11/19/2015 search for beer.
+            beerAdapter.clear();
             presenter.searchForBeer(searchView.getText().toString());
         }
     }

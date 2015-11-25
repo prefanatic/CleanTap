@@ -38,15 +38,24 @@ public class InfoAndCheckinAnimation {
         activity.getWindow().setSharedElementReturnTransition(sharedReturn);
     }
 
+    private static boolean fabIsAnimating = false;
     public static void hideFab(FloatingActionButton fab) {
+        if (fabIsAnimating) return;
+
         fab.animate()
                 .translationY(fab.getHeight() + fab.getPaddingBottom() + fab.getPaddingTop())
+                .withEndAction(() -> fabIsAnimating = false)
                 .start();
+        fabIsAnimating = true;
     }
 
     public static void showFab(FloatingActionButton fab) {
+        if (fabIsAnimating) return;
+
         fab.animate()
                 .translationY(0)
+                .withEndAction(() -> fabIsAnimating = false)
                 .start();
+        fabIsAnimating = true;
     }
 }

@@ -35,6 +35,7 @@ import io.github.prefanatic.cleantap.data.dto.BeerStats;
 import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import timber.log.Timber;
 
 public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresenter> implements BeerInfoView {
@@ -66,6 +67,7 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
 
         adapter = new BeerInfoAdapter(this);
         recycler.setAdapter(adapter);
+        recycler.setItemAnimator(new SlideInUpAnimator());
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
@@ -97,17 +99,17 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
     }
 
     private void handleFabOnScrollOnAppBar(int scrollY) {
-        if (Math.abs(scrollY - appbarPreviousScroll) > FAB_SCROLL_THRESHOLD) {
-            if (fabIsVisible)
+        if (Math.abs(scrollY) > FAB_SCROLL_THRESHOLD) {
+            if (fabIsVisible && (scrollY - appbarPreviousScroll) < 0)
                 InfoAndCheckinAnimation.hideFab(fab);
-            else
+            else if (!fabIsVisible && !((scrollY - appbarPreviousScroll) < 0))
                 InfoAndCheckinAnimation.showFab(fab);
 
             fabIsVisible = !fabIsVisible;
         }
 
-        Timber.d("%d", scrollY);
         appbarPreviousScroll = scrollY;
+        Timber.d("%d", scrollY);
     }
 
     @OnClick(R.id.fab)
