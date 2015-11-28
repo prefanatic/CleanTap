@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.github.prefanatic.cleantap.Application;
+import io.github.prefanatic.cleantap.data.Database;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
 
 @Module
@@ -35,6 +36,12 @@ public class AppContextModule {
     @Singleton
     public RxUntappdApi untappdApi() {
         return new RxUntappdApi();
+    }
+
+    @Provides
+    @Singleton
+    public Database database() {
+        return new Database(application);
     }
 
     @Provides

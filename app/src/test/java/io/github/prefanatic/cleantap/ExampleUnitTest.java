@@ -1,9 +1,10 @@
 package io.github.prefanatic.cleantap;
 
+import android.test.mock.MockContext;
+
 import org.junit.Test;
 
-import java.util.TimeZone;
-
+import io.github.prefanatic.cleantap.data.Database;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
 
 import static org.junit.Assert.assertEquals;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ExampleUnitTest {
     RxUntappdApi api = new RxUntappdApi();
+    Database database = new Database(new MockContext());
 
     @Test
     public void addition_isCorrect() throws Exception {
@@ -21,8 +23,6 @@ public class ExampleUnitTest {
 
     @Test
     public void test() {
-        TimeZone zone = TimeZone.getDefault();
-
-        System.out.println(zone.getRawOffset());
+        
     }
 }

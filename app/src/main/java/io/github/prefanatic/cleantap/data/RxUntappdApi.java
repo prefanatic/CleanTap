@@ -40,6 +40,10 @@ public class RxUntappdApi {
     public Observable<BeerStats> searchForBeers(String beers) {
        return api.searchBeers(authOptions, beers, 0, 25, "checkin")
                .flatMapIterable(response -> response.response.beers.items)
+               .doOnNext(stats -> {
+                   stats.id = stats.beer.bid;
+                   stats.breweryId = stats.brewery.brewery_id;
+               })
                .subscribeOn(Schedulers.io())
                .observeOn(AndroidSchedulers.mainThread());
     }

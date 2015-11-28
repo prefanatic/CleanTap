@@ -2,6 +2,8 @@ package io.github.prefanatic.cleantap;
 
 import android.content.SharedPreferences;
 
+import com.orm.SugarApp;
+
 import javax.inject.Inject;
 
 import io.github.prefanatic.cleantap.common.PreferenceKeys;
@@ -9,7 +11,7 @@ import io.github.prefanatic.cleantap.data.RxUntappdApi;
 import io.github.prefanatic.cleantap.injection.Injector;
 import timber.log.Timber;
 
-public class Application extends android.app.Application {
+public class Application extends SugarApp {
     @Inject RxUntappdApi api;
     @Inject SharedPreferences preferences;
 

@@ -36,7 +36,6 @@ import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import timber.log.Timber;
 
 public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresenter> implements BeerInfoView {
     @Bind(R.id.coordinator) CoordinatorLayout coordinator;
@@ -109,7 +108,6 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
         }
 
         appbarPreviousScroll = scrollY;
-        Timber.d("%d", scrollY);
     }
 
     @OnClick(R.id.fab)

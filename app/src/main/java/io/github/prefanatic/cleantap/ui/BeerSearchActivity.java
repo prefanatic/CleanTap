@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewEditorActionEvent;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import butterknife.Bind;
 import io.github.prefanatic.cleantap.R;
@@ -51,27 +53,43 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         toolbar.getNavigationIcon().setTint(Color.BLACK);
 
         beerAdapter = new BeerListAdapter(this);
+        StickyRecyclerHeadersDecoration decor = new StickyRecyclerHeadersDecoration(beerAdapter);
+        beerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                decor.invalidateHeaders();
+            }
+        });
+
         recyclerView.setAdapter(beerAdapter);
         recyclerView.setItemAnimator(new SlideInUpAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(decor);
         recyclerView.setNestedScrollingEnabled(false);
+
+        beerAdapter.addHeader(0, "Favorite");
+        beerAdapter.addHeader(1, "Recent");
+        beerAdapter.addHeader(2, "Search Results");
 
         watch(RxTextView.editorActionEvents(searchView)
                 .subscribe(this::searchViewEvent));
         watch(RxToolbar.navigationClicks(toolbar)
                 .subscribe(v -> finish()));
         watch(beerAdapter.clickEvent()
-                .map(event -> (ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats>) event)
                 .subscribe(this::beerClicked));
 
+        presenter.searchForLocalBeer("");
     }
 
-    private void beerClicked(ClickEvent<BeerSearchDelegate.ViewHolder, BeerStats> event) {
+    private void beerClicked(ClickEvent event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
-        intent.putExtra("beer", event.item);
+        intent.putExtra("beer", (BeerStats) event.item);
 
-        ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, event.viewHolder.beerImage,
-                ViewCompat.getTransitionName(event.viewHolder.beerImage));
+        presenter.persistBeer(((BeerStats) event.item));
+
+        View beerImage = ((BeerSearchDelegate.ViewHolder) event.viewHolder).beerImage;
+        ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, beerImage,
+                ViewCompat.getTransitionName(beerImage));
         ActivityCompat.startActivity(this, intent, transitionOptions.toBundle());
     }
 
@@ -87,11 +105,25 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     }
 
     @Override
+    public void foundRecentBeer(BeerStats beer) {
+        AnimUtils.hide(helpText);
+
+        beerAdapter.addItemUnderHeader(1, beer);
+    }
+
+    @Override
+    public void foundFavoriteBeer(BeerStats beer) {
+        AnimUtils.hide(helpText);
+
+        beerAdapter.addItemUnderHeader(0, beer);
+    }
+
+    @Override
     public void foundBeer(BeerStats beer) {
         AnimUtils.hide(progress);
 
         recyclerView.setNestedScrollingEnabled(true);
-        beerAdapter.addItem(beer);
+        beerAdapter.addItemUnderHeader(2, beer);
     }
 
     @NonNull
