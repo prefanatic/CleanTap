@@ -7,6 +7,8 @@ import com.hannesdorfmann.sqlbrite.dao.Dao;
 
 import io.github.prefanatic.cleantap.data.dto.Beer;
 import io.github.prefanatic.cleantap.data.dto.BeerMapper;
+import io.github.prefanatic.cleantap.data.dto.BeerStats;
+import io.github.prefanatic.cleantap.data.dto.Brewery;
 import rx.Observable;
 
 public class BeerDao extends Dao {
@@ -39,6 +41,18 @@ public class BeerDao extends Dao {
         ).args(String.valueOf(beerId))
                 .run()
                 .mapToOne(BeerMapper.MAPPER);
+    }
+
+    public Observable saveBeer(Beer beer) {
+        return getBeer(beer.bid)
+                .firstOrDefault(null)
+                .flatMap(b -> {
+                    if (b == null) {
+                        return addBeer(beer);
+                    }
+
+                    return updateBeer(beer);
+                });
     }
 
     public Observable<Long> addBeer(Beer beer) {

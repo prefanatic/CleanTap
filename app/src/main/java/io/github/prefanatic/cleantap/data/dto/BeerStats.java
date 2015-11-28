@@ -39,11 +39,6 @@ public class BeerStats implements Serializable {
     public BeerStats() {
     }
 
-    public BeerStats(Beer beer, Brewery brewery) {
-        this.beer = beer;
-        this.brewery = brewery;
-    }
-
     public Observable<Beer> getBeer() {
         if (beer != null)
             return Observable.just(beer);
@@ -56,7 +51,7 @@ public class BeerStats implements Serializable {
         if (brewery != null)
             return Observable.just(brewery);
 
-        // TODO: 11/28/2015 Request from the database handler our brewery class.
-        return Observable.just(null);
+        return Database.get().getBreweryDao().getBrewery((int) breweryId)
+                .doOnNext(b -> brewery = b);
     }
 }

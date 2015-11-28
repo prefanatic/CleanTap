@@ -56,15 +56,19 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
         sortPersisted();
 
         database.getBeerStatsDao().addBeerStats(stats);
-        database.getBeerDao().addBeer(stats.beer);
+        database.getBeerDao().saveBeer(stats.beer);
+        database.getBreweryDao().saveBrewery(stats.brewery);
 
         return true;
     }
 
     public void persistBeer(BeerStats stats) {
         stats.timeLookedAt = System.currentTimeMillis();
-        if (!addBeerIfNotPeristed(stats))
+        if (!addBeerIfNotPeristed(stats)) {
             database.getBeerStatsDao().updateBeerStats(stats);
+            database.getBeerDao().saveBeer(stats.beer);
+            database.getBreweryDao().saveBrewery(stats.brewery);
+        }
     }
 
     private void handleRecentSizeStorage() {
