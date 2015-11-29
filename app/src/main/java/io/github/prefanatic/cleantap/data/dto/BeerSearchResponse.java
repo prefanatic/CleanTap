@@ -10,6 +10,6 @@ public class BeerSearchResponse {
 
     public static class BeerList {
         public int count;
-        public List<BeerStats> items;
+        public List<BeerStatsDto> items;
     }
 }

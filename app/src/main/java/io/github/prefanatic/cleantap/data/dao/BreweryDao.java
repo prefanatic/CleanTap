@@ -59,21 +59,9 @@ public class BreweryDao extends Dao {
         }
     }
 
-    public Observable saveBrewery(Brewery brewery) {
-        return getBrewery(brewery.brewery_id)
-                .firstOrDefault(null)
-                .flatMap(b -> {
-                    if (b == null) {
-                        return addBrewery(brewery);
-                    }
-
-                    return updateBrewery(brewery);
-                });
-    }
-
     public Observable<Long> addBrewery(Brewery brewery) {
         serializeContactAndLocation(brewery);
-        return insert(Brewery.TABLE_NAME, mapValues(brewery));
+        return insert(Brewery.TABLE_NAME, mapValues(brewery), SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public Observable<Integer> updateBrewery(Brewery brewery) {

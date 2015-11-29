@@ -10,11 +10,6 @@ import com.hannesdorfmann.adapterdelegates.AbsAdapterDelegate;
 
 import java.util.List;
 
-import io.github.prefanatic.cleantap.common.ClickEvent;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
-import rx.Observable;
-import rx.subjects.PublishSubject;
-
 /**
  * Created by cody on 11/21/15.
  */

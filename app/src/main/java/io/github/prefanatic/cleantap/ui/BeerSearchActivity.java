@@ -27,7 +27,7 @@ import butterknife.Bind;
 import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.BaseActivity;
 import io.github.prefanatic.cleantap.common.ClickEvent;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
+import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchView;
 import io.github.prefanatic.cleantap.ui.delegate.BeerSearchDelegate;
@@ -83,9 +83,9 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
 
     private void beerClicked(ClickEvent event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
-        intent.putExtra("beer", (BeerStats) event.item);
+        intent.putExtra("beer", (BeerStatsDto) event.item);
 
-        presenter.persistBeer(((BeerStats) event.item));
+        presenter.persistBeer(((BeerStatsDto) event.item));
 
         View beerImage = ((BeerSearchDelegate.ViewHolder) event.viewHolder).beerImage;
         ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, beerImage,
@@ -105,21 +105,21 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     }
 
     @Override
-    public void foundRecentBeer(BeerStats beer) {
+    public void foundRecentBeer(BeerStatsDto beer) {
         AnimUtils.hide(helpText);
 
         beerAdapter.addItemUnderHeader(1, beer);
     }
 
     @Override
-    public void foundFavoriteBeer(BeerStats beer) {
+    public void foundFavoriteBeer(BeerStatsDto beer) {
         AnimUtils.hide(helpText);
 
         beerAdapter.addItemUnderHeader(0, beer);
     }
 
     @Override
-    public void foundBeer(BeerStats beer) {
+    public void foundBeer(BeerStatsDto beer) {
         AnimUtils.hide(progress);
 
         recyclerView.setNestedScrollingEnabled(true);

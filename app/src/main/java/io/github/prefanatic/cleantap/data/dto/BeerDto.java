@@ -6,7 +6,7 @@ import com.hannesdorfmann.sqlbrite.objectmapper.annotation.ObjectMappable;
 import java.io.Serializable;
 
 @ObjectMappable
-public class Beer  implements Serializable {
+public class BeerDto implements Serializable {
     public static final String TABLE_NAME = "beer";
     public static final String COL_ID = "id";
     public static final String COL_PRODUCTION = "production";
@@ -34,7 +34,7 @@ public class Beer  implements Serializable {
 
     @Column(COL_WISHLIST) public boolean wish_list;
 
-    public Beer() {
+    public BeerDto() {
     }
 
 }

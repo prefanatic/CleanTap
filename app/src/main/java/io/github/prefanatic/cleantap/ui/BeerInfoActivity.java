@@ -31,7 +31,7 @@ import butterknife.OnClick;
 import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.BaseActivity;
 import io.github.prefanatic.cleantap.data.dto.BeerExtended;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
+import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
@@ -48,7 +48,7 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
 
     private static final int FAB_SCROLL_THRESHOLD = 50;
 
-    private BeerStats stats;
+    private BeerStatsDto stats;
     private BeerInfoAdapter adapter;
     private int appbarPreviousScroll = 0;
     boolean fabIsVisible = true;
@@ -61,7 +61,7 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
 
         setContentView(R.layout.activity_beer_info);
 
-        stats = (BeerStats) getIntent().getSerializableExtra("beer");
+        stats = (BeerStatsDto) getIntent().getSerializableExtra("beer");
         presenter.getBeerInfo(stats.beer.bid);
 
         adapter = new BeerInfoAdapter(this);

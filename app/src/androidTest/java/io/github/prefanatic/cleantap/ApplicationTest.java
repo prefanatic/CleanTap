@@ -22,7 +22,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
                 .observeOn(Schedulers.immediate())
                 .first()
                 .subscribe(stats -> {
-                    stats.id = stats.beer.bid;
+                    stats.id = stats.beerDto.bid;
                     System.out.println("Received " + stats.id);
 
                     database.getBeerStatsDao().addBeerStats(stats)

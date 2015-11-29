@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import io.github.prefanatic.cleantap.data.dto.BeerExtended;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
+import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.data.dto.CheckInResponse;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
@@ -37,7 +37,7 @@ public class RxUntappdApi {
         authOptions.put("access_token", authToken);
     }
 
-    public Observable<BeerStats> searchForBeers(String beers) {
+    public Observable<BeerStatsDto> searchForBeers(String beers) {
        return api.searchBeers(authOptions, beers, 0, 25, "checkin")
                .flatMapIterable(response -> response.response.beers.items)
                .doOnNext(stats -> {

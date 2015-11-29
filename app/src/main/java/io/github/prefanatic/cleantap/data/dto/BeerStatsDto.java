@@ -9,7 +9,7 @@ import io.github.prefanatic.cleantap.data.Database;
 import rx.Observable;
 
 @ObjectMappable
-public class BeerStats implements Serializable {
+public class BeerStatsDto implements Serializable {
     public static final String TABLE_NAME = "beer_stats";
     public static final String COL_CHECKIN_COUNT = "checkinCount";
     public static final String COL_YOUR_COUNT = "yourCount";
@@ -26,7 +26,7 @@ public class BeerStats implements Serializable {
     @Column(COL_YOUR_COUNT) public int your_count;
 
     // These may or may not be null, depending on if this is loaded from disk or through retrofit.
-    public Beer beer;
+    public BeerDto beer;
     public Brewery brewery;
 
     // Persistence Fields
@@ -36,10 +36,10 @@ public class BeerStats implements Serializable {
     @Column(COL_FAVORITE) public boolean favorite;
     @Column(COL_USER_RATING) public int userRating;
 
-    public BeerStats() {
+    public BeerStatsDto() {
     }
 
-    public Observable<Beer> getBeer() {
+    public Observable<BeerDto> getBeerDto() {
         if (beer != null)
             return Observable.just(beer);
 

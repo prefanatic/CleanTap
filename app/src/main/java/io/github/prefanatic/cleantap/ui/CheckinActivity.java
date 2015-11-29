@@ -16,7 +16,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
-import io.github.prefanatic.cleantap.data.dto.Beer;
+import io.github.prefanatic.cleantap.data.dto.BeerDto;
 import io.github.prefanatic.cleantap.injection.Injector;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
 import rx.android.schedulers.AndroidSchedulers;
@@ -30,7 +30,7 @@ public class CheckinActivity extends Activity {
 
     @Inject RxUntappdApi api;
 
-    private Beer beer;
+    private BeerDto beerDto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class CheckinActivity extends Activity {
         ButterKnife.bind(this);
         Injector.INSTANCE.getApplicationComponent().inject(this);
 
-        beer = ((Beer) getIntent().getSerializableExtra("beer"));
+        beerDto = ((BeerDto) getIntent().getSerializableExtra("beer"));
 
         InfoAndCheckinAnimation.setupSharedElementTransitionsFab(this, container, getResources().getDimensionPixelSize(R.dimen.dialog_corners));
 
@@ -63,7 +63,7 @@ public class CheckinActivity extends Activity {
 
     @OnClick(R.id.confirm)
     public void confirmed() {
-        api.checkinBeer(beer.bid, reviewBox.getText().toString(), (float) seekBar.getProgress() / 4, null, null)
+        api.checkinBeer(beerDto.bid, reviewBox.getText().toString(), (float) seekBar.getProgress() / 4, null, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {

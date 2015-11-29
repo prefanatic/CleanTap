@@ -16,15 +16,14 @@ import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.ButterKnifeViewHolder;
 import io.github.prefanatic.cleantap.common.ClickEvent;
 import io.github.prefanatic.cleantap.common.adapter.delegation.AdapterDelegationPassthrough;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
-import rx.Observable;
+import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import rx.subjects.PublishSubject;
 
 /**
  * Created by cody on 11/21/15.
  */
-public class BeerSearchDelegate extends AdapterDelegationPassthrough<BeerStats, BeerSearchDelegate.ViewHolder> {
-    private PublishSubject<ClickEvent<ViewHolder, BeerStats>> subject;
+public class BeerSearchDelegate extends AdapterDelegationPassthrough<BeerStatsDto, BeerSearchDelegate.ViewHolder> {
+    private PublishSubject<ClickEvent<ViewHolder, BeerStatsDto>> subject;
 
     public BeerSearchDelegate(Activity activity, int viewType, PublishSubject subject) {
         super(activity, viewType);
@@ -32,7 +31,7 @@ public class BeerSearchDelegate extends AdapterDelegationPassthrough<BeerStats, 
     }
 
     @Override
-    public void onBindViewHolder(BeerStats stats, ViewHolder holder) {
+    public void onBindViewHolder(BeerStatsDto stats, ViewHolder holder) {
 
         holder.beerName.setText(stats.beer.beer_name);
         holder.breweryName.setText(stats.brewery.brewery_name);
@@ -50,7 +49,7 @@ public class BeerSearchDelegate extends AdapterDelegationPassthrough<BeerStats, 
 
     @Override
     public boolean isForViewType(Object item) {
-        return item instanceof BeerStats;
+        return item instanceof BeerStatsDto;
     }
 
     public class ViewHolder extends ButterKnifeViewHolder {
@@ -61,7 +60,7 @@ public class BeerSearchDelegate extends AdapterDelegationPassthrough<BeerStats, 
         public ViewHolder(View itemView) {
             super(itemView);
             RxView.clicks(itemView).subscribe(v -> {
-                subject.onNext(new ClickEvent<>(this, (BeerStats) itemView.getTag()));
+                subject.onNext(new ClickEvent<>(this, (BeerStatsDto) itemView.getTag()));
             });
         }
     }
