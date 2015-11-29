@@ -55,9 +55,9 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
         persistBeers.add(stats);
         sortPersisted();
 
-        database.getBeerStatsDao().addBeerStats(stats);
-        database.getBeerDao().saveBeer(stats.beer);
-        database.getBreweryDao().saveBrewery(stats.brewery);
+        database.getBeerStatsDao().addBeerStats(stats).subscribe();
+        database.getBeerDao().saveBeer(stats.beer).subscribe();
+        database.getBreweryDao().saveBrewery(stats.brewery).subscribe();
 
         return true;
     }
@@ -81,7 +81,8 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
 
     public void searchForLocalBeer(String query) {
         for (BeerStats stats : persistBeers) {
-            stats.getBeer().filter(beer -> beer.beer_name.toLowerCase().contains(query.toLowerCase()))
+            stats.getBeer()
+                    .filter(beer -> beer.beer_name.toLowerCase().contains(query.toLowerCase()))
                     .subscribe(beer -> {
                         if (stats.favorite)
                             getView().foundFavoriteBeer(stats);

@@ -7,9 +7,8 @@ import com.hannesdorfmann.sqlbrite.dao.Dao;
 
 import io.github.prefanatic.cleantap.data.dto.Beer;
 import io.github.prefanatic.cleantap.data.dto.BeerMapper;
-import io.github.prefanatic.cleantap.data.dto.BeerStats;
-import io.github.prefanatic.cleantap.data.dto.Brewery;
 import rx.Observable;
+import timber.log.Timber;
 
 public class BeerDao extends Dao {
     @Override
@@ -45,8 +44,11 @@ public class BeerDao extends Dao {
 
     public Observable saveBeer(Beer beer) {
         return getBeer(beer.bid)
+                .doOnNext(b -> Timber.d("Found"))
+                .doOnCompleted(() -> Timber.d("Finished"))
                 .firstOrDefault(null)
                 .flatMap(b -> {
+                    Timber.d("Flatmapping %s", b);
                     if (b == null) {
                         return addBeer(beer);
                     }
