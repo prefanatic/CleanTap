@@ -43,6 +43,11 @@ public class RecyclerListAdapter extends AbsDelegationAdapter<List> {
         notifyItemInserted(this.items.size());
     }
 
+    public void addItem(Object item, int index) {
+        this.items.add(index, item);
+        notifyItemInserted(index);
+    }
+
     public void removeItem(Object item) {
         int i = this.items.indexOf(item);
         this.items.remove(item);

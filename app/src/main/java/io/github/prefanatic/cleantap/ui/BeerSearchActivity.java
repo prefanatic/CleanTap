@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
@@ -22,7 +23,10 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewEditorActionEvent;
+import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -31,6 +35,7 @@ import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.BaseActivity;
 import io.github.prefanatic.cleantap.common.ClickEvent;
 import io.github.prefanatic.cleantap.common.PreferenceKeys;
+import io.github.prefanatic.cleantap.common.RecyclerViewUpdateEvent;
 import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.data.oauth.AuthDialog;
 import io.github.prefanatic.cleantap.injection.Injector;
@@ -51,6 +56,7 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     @Inject SharedPreferences preferences;
 
     private BeerListAdapter beerAdapter;
+    private StickyRecyclerHeadersDecoration beerDecor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,24 +68,23 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         toolbar.getNavigationIcon().setTint(Color.BLACK);
 
         beerAdapter = new BeerListAdapter(this);
-        StickyRecyclerHeadersDecoration decor = new StickyRecyclerHeadersDecoration(beerAdapter);
-        beerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                decor.invalidateHeaders();
-            }
-        });
+        beerDecor = new StickyRecyclerHeadersDecoration(beerAdapter);
 
         recyclerView.setAdapter(beerAdapter);
         recyclerView.setItemAnimator(new SlideInUpAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(decor);
+        recyclerView.addItemDecoration(beerDecor);
         recyclerView.setNestedScrollingEnabled(false);
 
         beerAdapter.addHeader(0, "Favorite");
         beerAdapter.addHeader(1, "Recent");
         beerAdapter.addHeader(2, "Search Results");
 
+        watch(RxTextView.textChangeEvents(searchView)
+                .subscribe(this::searchViewTextEventLocal));
+        watch(RxTextView.textChangeEvents(searchView)
+                .debounce(700, TimeUnit.MILLISECONDS)
+                .subscribe(this::searchViewTextEventNetwork));
         watch(RxTextView.editorActionEvents(searchView)
                 .subscribe(this::searchViewEvent));
         watch(RxToolbar.navigationClicks(toolbar)
@@ -95,6 +100,11 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         }
     }
 
+    @Override
+    public void error(Throwable e) {
+        Snackbar.make(recyclerView, e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+    }
+
     private void beerClicked(ClickEvent event) {
         Intent intent = new Intent(this, BeerInfoActivity.class);
         intent.putExtra("beer", (BeerStatsDto) event.item);
@@ -107,9 +117,16 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         ActivityCompat.startActivity(this, intent, transitionOptions.toBundle());
     }
 
+    private void searchViewTextEventLocal(TextViewTextChangeEvent event) {
+        presenter.searchForLocalBeer(event.text().toString());
+    }
+
+    private void searchViewTextEventNetwork(TextViewTextChangeEvent event) {
+        presenter.searchForBeer(event.text().toString());
+    }
+
     private void searchViewEvent(TextViewEditorActionEvent event) {
         if (event.actionId() == EditorInfo.IME_ACTION_SEARCH || (event.keyEvent().getKeyCode() == KeyEvent.KEYCODE_ENTER && event.keyEvent().getAction() == KeyEvent.ACTION_UP)) {
-            beerAdapter.clear();
             recyclerView.setNestedScrollingEnabled(false);
             presenter.searchForBeer(searchView.getText().toString());
 
@@ -119,25 +136,37 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     }
 
     @Override
-    public void foundRecentBeer(BeerStatsDto beer) {
+    public void foundRecentBeer(RecyclerViewUpdateEvent<BeerStatsDto> event) {
         AnimUtils.hide(helpText);
 
-        beerAdapter.addItemUnderHeader(1, beer);
+        for (BeerStatsDto dto : event.getAdded())
+            beerAdapter.addItemUnderHeader(1, 0, dto);
+        for (BeerStatsDto dto : event.getRemoved())
+            beerAdapter.removeItem(dto);
     }
 
     @Override
-    public void foundFavoriteBeer(BeerStatsDto beer) {
+    public void foundFavoriteBeer(RecyclerViewUpdateEvent<BeerStatsDto> event) {
         AnimUtils.hide(helpText);
 
-        beerAdapter.addItemUnderHeader(0, beer);
+        for (BeerStatsDto dto : event.getAdded())
+            beerAdapter.addItemUnderHeader(0, 0, dto);
+        for (BeerStatsDto dto : event.getRemoved())
+            beerAdapter.removeItem(dto);
     }
 
     @Override
-    public void foundBeer(BeerStatsDto beer) {
+    public void foundBeer(RecyclerViewUpdateEvent<BeerStatsDto> event) {
         AnimUtils.hide(progress);
 
         recyclerView.setNestedScrollingEnabled(true);
-        beerAdapter.addItemUnderHeader(2, beer);
+        for (BeerStatsDto dto : event.getAdded())
+            beerAdapter.addItemUnderHeader(2, dto);
+        for (BeerStatsDto dto : event.getRemoved())
+            beerAdapter.removeItem(dto);
+
+        beerDecor.invalidateHeaders();
+        recyclerView.smoothScrollToPosition(0);
     }
 
     @NonNull

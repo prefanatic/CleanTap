@@ -10,10 +10,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.prefanatic.cleantap.common.PreferenceKeys;
+import io.github.prefanatic.cleantap.common.RecyclerViewUpdateEvent;
 import io.github.prefanatic.cleantap.data.Database;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
 import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.injection.Injector;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
     @Inject RxUntappdApi api;
@@ -21,9 +25,16 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
     @Inject Database database;
 
     private List<BeerStatsDto> persistBeers;
+    private Subscription searchSub;
+
+    private RecyclerViewUpdateEvent<BeerStatsDto> favoriteSet, recentSet, networkSet;
 
     public BeerSearchPresenter() {
         Injector.INSTANCE.getApplicationComponent().inject(this);
+
+        favoriteSet = new RecyclerViewUpdateEvent<>();
+        recentSet = new RecyclerViewUpdateEvent<>();
+        networkSet = new RecyclerViewUpdateEvent<>();
     }
 
     @Override
@@ -81,24 +92,42 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
 
     public void searchForLocalBeer(String query) {
         for (BeerStatsDto stats : persistBeers) {
-            stats.getBeerDto()
-                    .filter(beer -> beer.beer_name.toLowerCase().contains(query.toLowerCase()))
-                    .subscribe(beer -> {
-                        if (stats.favorite)
-                            getView().foundFavoriteBeer(stats);
-                        else
-                            getView().foundRecentBeer(stats);
-                    });
+            if (stats.beer.beer_name.toLowerCase().contains(query.toLowerCase())) {
+                Timber.d("Found %s from %s", stats.beer.beer_name, query);
+                if (stats.favorite)
+                    favoriteSet.addToCache(stats);
+                else
+                    recentSet.addToCache(stats);
+            }
+        }
+
+        favoriteSet.updateFromCache();
+        recentSet.updateFromCache();
+
+        Timber.d("%s", recentSet.toString());
+
+        if (isViewAttached()) {
+            getView().foundFavoriteBeer(favoriteSet);
+            getView().foundRecentBeer(recentSet);
         }
     }
 
     public void searchForBeer(String query) {
-        api.searchForBeers(query)
-                .subscribe(this::beersFound);
-    }
+        if (query.isEmpty())
+            return;
 
-    public void beersFound(BeerStatsDto stats) {
-        if (isViewAttached())
-            getView().foundBeer(stats);
+        if (searchSub != null && !searchSub.isUnsubscribed())
+            searchSub.unsubscribe();
+
+        searchSub = api.searchForBeers(query)
+                .unsubscribeOn(Schedulers.io()) // Fixes https://github.com/square/okhttp/issues/1592
+                .subscribe(networkSet::addToCache, err -> {
+                    if (isViewAttached())
+                        getView().error(err);
+                }, () -> {
+                    networkSet.updateFromCache();
+                    if (isViewAttached())
+                        getView().foundBeer(networkSet);
+                });
     }
 }

@@ -18,14 +18,19 @@ import io.github.prefanatic.cleantap.common.adapter.delegation.Title;
 
 public class TitleRecyclerListAdapter extends RecyclerListAdapter implements StickyRecyclerHeadersAdapter<TitleRecyclerListAdapter.ViewHolder> {
     public List<Title> headers = new ArrayList<>();
-    public Map<Integer, Integer> headerMap = new HashMap<>();
+    public Map<Object, Integer> headerMap = new HashMap<>();
 
     public TitleRecyclerListAdapter() {
     }
 
     public void addItemUnderHeader(int id, Object item) {
         addItem(item);
-        headerMap.put(items.size() - 1, id);
+        headerMap.put(item, id);
+    }
+
+    public void addItemUnderHeader(int id, int index, Object item) {
+        addItem(item, index);
+        headerMap.put(item, id);
     }
 
     public void addHeader(long id, String title) {
@@ -34,7 +39,7 @@ public class TitleRecyclerListAdapter extends RecyclerListAdapter implements Sti
 
     @Override
     public long getHeaderId(int position) {
-        return headerMap.get(position);
+        return headerMap.get(items.get(position));
     }
 
     @Override
