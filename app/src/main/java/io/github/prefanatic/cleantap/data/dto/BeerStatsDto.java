@@ -54,39 +54,4 @@ public class BeerStatsDto implements Serializable {
         return Database.get().getBreweryDao().getBrewery((int) breweryId)
                 .doOnNext(b -> brewery = b);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BeerStatsDto that = (BeerStatsDto) o;
-
-        if (checkin_count != that.checkin_count) return false;
-        if (have_had != that.have_had) return false;
-        if (your_count != that.your_count) return false;
-        if (id != that.id) return false;
-        if (breweryId != that.breweryId) return false;
-        if (timeLookedAt != that.timeLookedAt) return false;
-        if (favorite != that.favorite) return false;
-        if (userRating != that.userRating) return false;
-        if (beer != null ? !beer.equals(that.beer) : that.beer != null) return false;
-        return !(brewery != null ? !brewery.equals(that.brewery) : that.brewery != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (checkin_count ^ (checkin_count >>> 32));
-        result = 31 * result + (have_had ? 1 : 0);
-        result = 31 * result + your_count;
-        result = 31 * result + (beer != null ? beer.hashCode() : 0);
-        result = 31 * result + (brewery != null ? brewery.hashCode() : 0);
-        result = 31 * result + (int) (id ^ (id >>> 32));
-        result = 31 * result + (int) (breweryId ^ (breweryId >>> 32));
-        result = 31 * result + (int) (timeLookedAt ^ (timeLookedAt >>> 32));
-        result = 31 * result + (favorite ? 1 : 0);
-        result = 31 * result + userRating;
-        return result;
-    }
 }

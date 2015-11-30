@@ -27,6 +27,7 @@ public class CheckinActivity extends Activity {
     @Bind(R.id.seekbar) DiscreteSeekBar seekBar;
     @Bind(R.id.confirm) TextView confirm;
     @Bind(R.id.review) EditText reviewBox;
+    @Bind(R.id.rating) TextView rating;
 
     @Inject RxUntappdApi api;
 
@@ -51,7 +52,10 @@ public class CheckinActivity extends Activity {
 
             @Override
             public String transformToString(int value) {
-                return String.format("%.2f", (float) value / 4);
+                String val = String.format("%.2f", (float) value / 4);
+                rating.setText(val);
+
+                return val;
             }
 
             @Override
@@ -63,6 +67,8 @@ public class CheckinActivity extends Activity {
 
     @OnClick(R.id.confirm)
     public void confirmed() {
+        if (reviewBox.length() > 140) return;
+
         api.checkinBeer(beerDto.bid, reviewBox.getText().toString(), (float) seekBar.getProgress() / 4, null, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

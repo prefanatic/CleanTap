@@ -33,13 +33,35 @@ public class TitleRecyclerListAdapter extends RecyclerListAdapter implements Sti
         headerMap.put(item, id);
     }
 
+    @Override
+    public void removeItem(Object item) {
+        super.removeItem(item);
+        headerMap.remove(item);
+    }
+
     public void addHeader(long id, String title) {
         headers.add(new Title(id, title));
     }
 
     @Override
     public long getHeaderId(int position) {
-        return headerMap.get(items.get(position));
+        Integer i = headerMap.get(items.get(position));
+
+        /*
+        Timber.d("In Items");
+        for (Object o : items) {
+            Timber.d("%s", o);
+        }
+
+        Timber.d("In HeaderMap");
+        for (Object o : headerMap.keySet()) {
+            Timber.d("%s", o);
+        }
+
+        Timber.d("Looking for position %d (%s) is %d", position, items.get(position), i);
+        */
+
+        return i;
     }
 
     @Override

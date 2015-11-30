@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:onClick="dismiss">
@@ -27,21 +28,41 @@
             android:layout_height="wrap_content"
             android:text="@string/check_in_rating"/>
 
-        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-            android:id="@+id/seekbar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            app:dsb_max="20"
-            app:dsb_min="0"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                android:id="@+id/seekbar"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                app:dsb_max="20"
+                app:dsb_min="0"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rating"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                tools:text="4.5"/>
+
+        </LinearLayout>
+
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/check_in_review_hint">
+            android:hint="@string/check_in_review_hint"
+            app:counterMaxLength="140"
+            app:counterEnabled="true">
 
             <EditText
                 android:id="@+id/review"
+                android:maxLength="140"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
