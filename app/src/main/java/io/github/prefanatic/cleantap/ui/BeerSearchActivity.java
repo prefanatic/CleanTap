@@ -1,6 +1,7 @@
 package io.github.prefanatic.cleantap.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,11 +24,16 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewEditorActionEvent;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.BaseActivity;
 import io.github.prefanatic.cleantap.common.ClickEvent;
+import io.github.prefanatic.cleantap.common.PreferenceKeys;
 import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
+import io.github.prefanatic.cleantap.data.oauth.AuthDialog;
+import io.github.prefanatic.cleantap.injection.Injector;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchView;
 import io.github.prefanatic.cleantap.ui.delegate.BeerSearchDelegate;
@@ -42,11 +48,14 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     @Bind(R.id.help_search_info) TextView helpText;
     @Bind(R.id.progress) ProgressBar progress;
 
+    @Inject SharedPreferences preferences;
+
     private BeerListAdapter beerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Injector.INSTANCE.getApplicationComponent().inject(this);
         setContentView(R.layout.activity_beer_search);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
@@ -79,6 +88,11 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
                 .subscribe(this::beerClicked));
 
         presenter.searchForLocalBeer("");
+
+        if (preferences.getString(PreferenceKeys.AUTH_TOKEN, "").isEmpty()) {
+            AuthDialog dialog = new AuthDialog();
+            dialog.show(getFragmentManager(), "authDialog");
+        }
     }
 
     private void beerClicked(ClickEvent event) {

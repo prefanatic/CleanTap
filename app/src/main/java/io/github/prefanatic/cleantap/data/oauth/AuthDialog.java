@@ -19,12 +19,13 @@ import io.github.prefanatic.cleantap.R;
 import io.github.prefanatic.cleantap.common.PreferenceKeys;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
 import io.github.prefanatic.cleantap.injection.Injector;
+import io.github.prefanatic.cleantap.ui.widget.WebViewFix;
 
 public class AuthDialog extends DialogFragment {
     private static final String CLIENT_ID = "EFED9A1C92001BD10DEE9BA371181CBA0B0D831A";
     public static final String REDIRECT_URL = "localhost";
 
-    @Bind(R.id.webview) WebView webView;
+    @Bind(R.id.webview) WebViewFix webView;
     @Inject RxUntappdApi api;
     @Inject SharedPreferences preferences;
 
@@ -55,6 +56,11 @@ public class AuthDialog extends DialogFragment {
                 }
             }
         });
+
+        // https://code.google.com/p/android/issues/detail?id=7189
+        webView.setFocusable(true);
+        webView.setFocusableInTouchMode(true);
+        webView.requestFocus(View.FOCUS_DOWN);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view);
