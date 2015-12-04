@@ -26,11 +26,13 @@ import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerSearchPresenter;
 import io.github.prefanatic.cleantap.ui.BeerSearchActivity;
 import io.github.prefanatic.cleantap.ui.CheckinActivity;
+import io.github.prefanatic.cleantap.ui.SearchFilterDialog;
 
 @Singleton
 @Component(modules = {AppContextModule.class})
 public interface ApplicationComponent extends AppContextComponent {
     void inject(Application application);
+    void inject(SearchFilterDialog dialog);
     void inject(BeerSearchPresenter presenter);
     void inject(AuthDialog dialog);
     void inject(BeerInfoPresenter presenter);

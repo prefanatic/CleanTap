@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -39,6 +40,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class CheckinActivity extends Activity {
+    @Bind(R.id.frame) FrameLayout frame;
     @Bind(R.id.container) ViewGroup container;
     @Bind(R.id.seekbar) DiscreteSeekBar seekBar;
     @Bind(R.id.confirm) TextView confirm;

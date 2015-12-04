@@ -30,6 +30,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
@@ -41,6 +42,7 @@ import com.jakewharton.rxbinding.support.design.widget.RxAppBarLayout;
 import com.jakewharton.rxbinding.support.v7.widget.RecyclerViewScrollEvent;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
+import com.jakewharton.rxbinding.view.RxView;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -52,6 +54,7 @@ import io.github.prefanatic.cleantap.mvp.BeerInfoPresenter;
 import io.github.prefanatic.cleantap.mvp.BeerInfoView;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import rx.functions.Func0;
 
 public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresenter> implements BeerInfoView {
     @Bind(R.id.coordinator) CoordinatorLayout coordinator;
@@ -82,12 +85,13 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
 
         adapter = new BeerInfoAdapter(this);
         recycler.setAdapter(adapter);
-        recycler.setItemAnimator(new SlideInUpAnimator());
+        recycler.setItemAnimator(new SlideInUpAnimator(new AccelerateDecelerateInterpolator()));
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(View view) {
                 startPostponedEnterTransition();
+                //animateViewsOnEnter();
                 recycler.removeOnChildAttachStateChangeListener(this);
             }
 
@@ -106,7 +110,24 @@ public class BeerInfoActivity extends BaseActivity<BeerInfoView, BeerInfoPresent
         watch(RxToolbar.navigationClicks(toolbar).subscribe(v -> onBackPressed()));
         watch(RxRecyclerView.scrollEvents(recycler).subscribe(this::handleFabOnScrollOnRecycler));
         watch(RxAppBarLayout.offsetChanges(appbarLayout).subscribe(this::handleFabOnScrollOnAppBar));
+        watch(RxView.preDraws(recycler, new Func0<Boolean>() {
+            @Override
+            public Boolean call() {
+                //animateViewsOnEnter();
+                return true;
+            }
+        }).subscribe());
+    }
 
+    private void animateViewsOnEnter() {
+        recycler.animate()
+                .withStartAction(() -> {
+                    recycler.setTranslationY(0.1f * recycler.getHeight());
+                    recycler.setAlpha(0f);
+                })
+                .alpha(1f)
+                .translationY(0)
+                .start();
     }
 
     private void handleFabOnScrollOnRecycler(RecyclerViewScrollEvent event) {

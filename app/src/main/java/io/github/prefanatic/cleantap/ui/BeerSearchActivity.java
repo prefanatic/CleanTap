@@ -30,6 +30,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -82,6 +83,7 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         toolbar.getNavigationIcon().setTint(Color.BLACK);
+        toolbar.inflateMenu(R.menu.menu_search);
 
         beerAdapter = new BeerListAdapter(this);
         beerDecor = new StickyRecyclerHeadersDecoration(beerAdapter);
@@ -105,6 +107,8 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
                 .subscribe(this::searchViewEvent));
         watch(RxToolbar.navigationClicks(toolbar)
                 .subscribe(v -> finish()));
+        watch(RxToolbar.itemClicks(toolbar)
+                .subscribe(this::menuClickEvent));
         watch(beerAdapter.clickEvent()
                 .subscribe(this::beerClicked));
 
@@ -113,6 +117,14 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
         if (preferences.getString(PreferenceKeys.AUTH_TOKEN, "").isEmpty()) {
             AuthDialog dialog = new AuthDialog();
             dialog.show(getFragmentManager(), "authDialog");
+        }
+    }
+
+    private void menuClickEvent(MenuItem item) {
+        if (item.getItemId() == R.id.action_filter) {
+            SearchFilterDialog dialog = new SearchFilterDialog();
+
+            dialog.show(getFragmentManager(), "searchFilter");
         }
     }
 
@@ -142,7 +154,9 @@ public class BeerSearchActivity extends BaseActivity<BeerSearchView, BeerSearchP
     }
 
     private void searchViewEvent(TextViewEditorActionEvent event) {
-        if (event.actionId() == EditorInfo.IME_ACTION_SEARCH || (event.keyEvent().getKeyCode() == KeyEvent.KEYCODE_ENTER && event.keyEvent().getAction() == KeyEvent.ACTION_UP)) {
+        if (event.actionId() == EditorInfo.IME_ACTION_SEARCH
+                || (event.keyEvent().getKeyCode() == KeyEvent.KEYCODE_ENTER
+                && event.keyEvent().getAction() == KeyEvent.ACTION_UP)) {
             recyclerView.setNestedScrollingEnabled(false);
             presenter.searchForBeer(searchView.getText().toString());
 

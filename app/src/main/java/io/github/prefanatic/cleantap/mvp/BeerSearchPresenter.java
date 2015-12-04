@@ -33,7 +33,6 @@ import io.github.prefanatic.cleantap.data.dto.BeerStatsDto;
 import io.github.prefanatic.cleantap.injection.Injector;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
     @Inject RxUntappdApi api;
@@ -109,7 +108,6 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
     public void searchForLocalBeer(String query) {
         for (BeerStatsDto stats : persistBeers) {
             if (stats.beer.beer_name.toLowerCase().contains(query.toLowerCase())) {
-                Timber.d("Found %s from %s", stats.beer.beer_name, query);
                 if (stats.favorite)
                     favoriteSet.addToCache(stats);
                 else
@@ -120,11 +118,11 @@ public class BeerSearchPresenter extends MvpBasePresenter<BeerSearchView> {
         favoriteSet.updateFromCache();
         recentSet.updateFromCache();
 
-        Timber.d("%s", recentSet.toString());
-
         if (isViewAttached()) {
-            getView().foundFavoriteBeer(favoriteSet);
-            getView().foundRecentBeer(recentSet);
+            if (preferences.getBoolean(PreferenceKeys.SEARCH_FAVORITE, true))
+                getView().foundFavoriteBeer(favoriteSet);
+            if (preferences.getBoolean(PreferenceKeys.SEARCH_RECENT, true))
+                getView().foundRecentBeer(recentSet);
         }
     }
 
