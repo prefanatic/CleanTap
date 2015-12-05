@@ -15,93 +15,148 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/frame"
-             android:layout_width="match_parent"
-             android:animateLayoutChanges="true"
-             android:layout_gravity="center_vertical"
-             android:layout_height="wrap_content"
-             android:onClick="dismiss">
+<FrameLayout
+    android:id="@+id/frame"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:animateLayoutChanges="true"
+    android:onClick="dismiss">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="275dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/white"
+        android:clickable="true"
+        android:elevation="20dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:clickable="true"
-        android:elevation="20dp"
         android:paddingTop="16dp"
         android:transitionName="@string/transition_checkin_morph">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:layout_marginBottom="16dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:layout_height="wrap_content"
-            android:text="@string/check_in_rating"/>
-
         <LinearLayout
+            android:id="@+id/checkin_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-                android:id="@+id/seekbar"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                app:dsb_max="20"
-                app:dsb_min="0"/>
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rating"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                tools:text="4.5"/>
+                android:layout_marginBottom="16dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/check_in_rating"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                    android:id="@+id/seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:dsb_max="20"
+                    app:dsb_min="0"/>
+
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="4.5"/>
+
+            </LinearLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/check_in_review_hint"
+                app:counterEnabled="true"
+                app:counterMaxLength="140">
+
+                <EditText
+                    android:id="@+id/review"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="140"
+                    android:nextFocusDown="@id/review"
+                    android:nextFocusUp="@id/review"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="16dp"
+                android:text="@string/check_in_confirm"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/colorAccent"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/error_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="@string/check_in_error_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/check_in_error_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <TextView
+                android:id="@+id/error_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="16dp"
+                android:layout_gravity="bottom|center"
+                android:gravity="bottom"
+                android:text="@string/check_in_error_confirm"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/colorAccent"/>
 
         </LinearLayout>
 
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/check_in_review_hint"
-            app:counterMaxLength="140"
-            app:counterEnabled="true">
-
-            <EditText
-                android:id="@+id/review"
-                android:maxLength="140"
-                android:nextFocusUp="@id/review"
-                android:nextFocusDown="@id/review"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </android.support.design.widget.TextInputLayout>
-
-        <TextView
-            android:id="@+id/confirm"
+        <ProgressBar
+            android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="16dp"
-            android:clickable="true"
-            android:text="@string/check_in_confirm"
-            android:textAppearance="@style/TextAppearance.AppCompat.Button"
-            android:textColor="@color/colorAccent"/>
+            android:layout_gravity="center"
+            android:visibility="gone"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

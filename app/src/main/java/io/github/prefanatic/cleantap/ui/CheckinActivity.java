@@ -22,9 +22,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -36,16 +40,21 @@ import io.github.prefanatic.cleantap.data.RxUntappdApi;
 import io.github.prefanatic.cleantap.data.dto.BeerDto;
 import io.github.prefanatic.cleantap.injection.Injector;
 import io.github.prefanatic.cleantap.ui.animation.InfoAndCheckinAnimation;
+import io.github.prefanatic.cleantap.util.AnimUtils;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class CheckinActivity extends Activity {
     @Bind(R.id.frame) FrameLayout frame;
     @Bind(R.id.container) ViewGroup container;
+    @Bind(R.id.checkin_content) LinearLayout content;
     @Bind(R.id.seekbar) DiscreteSeekBar seekBar;
     @Bind(R.id.confirm) TextView confirm;
     @Bind(R.id.review) EditText reviewBox;
     @Bind(R.id.rating) TextView rating;
+    @Bind(R.id.progress) ProgressBar progress;
+    @Bind(R.id.error_layout) LinearLayout errorLayout;
 
     @Inject RxUntappdApi api;
 
@@ -86,13 +95,29 @@ public class CheckinActivity extends Activity {
     @OnClick(R.id.confirm)
     public void confirmed() {
         if (reviewBox.length() > 140) return;
+        AnimUtils.showAsTranslationY(progress);
+        AnimUtils.hideChildren(content);
 
         api.checkinBeer(beerDto.bid, reviewBox.getText().toString(), (float) seekBar.getProgress() / 4, null, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     dismiss(null);
+                }, err -> {
+                    showError();
                 });
+    }
+
+    @OnClick(R.id.error_confirm)
+    public void errorConfirmed() {
+        dismiss(null);
+    }
+
+    public void showError() {
+        AnimUtils.hide(progress);
+
+        errorLayout.setVisibility(View.VISIBLE);
+        AnimUtils.showChildren(errorLayout);
     }
 
     public void dismiss(View view) {

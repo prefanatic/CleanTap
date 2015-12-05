@@ -32,4 +32,7 @@
     <string name="filter_title">Search Options</string>
     <string name="filter_cancel">Cancel</string>
     <string name="filter_ok">OK</string>
+    <string name="check_in_error_title">Uh oh</string>
+    <string name="check_in_error_content">We were unable to complete your request.\n\nHighly trained alcoholics have been dispatched to fix the situation.</string>
+    <string name="check_in_error_confirm">OK</string>
 </resources>

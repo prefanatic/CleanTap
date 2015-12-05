@@ -18,10 +18,12 @@ package io.github.prefanatic.cleantap.util;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.transition.Transition;
 import android.util.ArrayMap;
 import android.util.Property;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
@@ -34,19 +36,74 @@ public class AnimUtils {
 
     public static void show(View view) {
         if (view.getVisibility() == View.VISIBLE) return;
+
+        view.setVisibility(View.VISIBLE);
+        view.setAlpha(0f);
+
         view.animate()
                 .alpha(1f)
-                .withStartAction(() -> view.setVisibility(View.VISIBLE))
+                .start();
+    }
+
+    public static void showAsTranslationY(View view) {
+        if (view.getVisibility() == View.VISIBLE) return;
+
+        view.setVisibility(View.VISIBLE);
+        view.setAlpha(0f);
+        view.setTranslationY(-200);
+
+        view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(0L)
+                .setDuration(400L)
                 .start();
     }
 
     public static void hide(View view) {
         if (view.getVisibility() == View.GONE) return;
+
         view.animate()
                 .alpha(0f)
                 .withEndAction(() -> view.setVisibility(View.GONE))
                 .start();
     }
+
+    public static void hideChildren(ViewGroup group) {
+        FastOutLinearInInterpolator interpolator = new FastOutLinearInInterpolator();
+
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View view = group.getChildAt(i);
+
+            view.animate()
+                    .alpha(0f)
+                    .translationY(view.getHeight() / 3)
+                    .setStartDelay(0L)
+                    .setDuration(100L)
+                    .setInterpolator(interpolator)
+                    .start();
+        }
+    }
+
+    public static void showChildren(ViewGroup group) {
+        FastOutLinearInInterpolator interpolator = new FastOutLinearInInterpolator();
+
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View view = group.getChildAt(i);
+
+            view.setTranslationY(view.getHeight() / 3);
+            view.setAlpha(0f);
+            view.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setStartDelay(0L)
+                    .setDuration(150L)
+                    //.setInterpolator(interpolator)
+                    .start();
+
+        }
+    }
+
 
     /**
      * Linear interpolate between a and b with parameter t.

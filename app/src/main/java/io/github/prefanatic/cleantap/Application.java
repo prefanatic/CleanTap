@@ -18,10 +18,14 @@ package io.github.prefanatic.cleantap;
 
 import android.content.SharedPreferences;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.orm.SugarApp;
 
 import javax.inject.Inject;
 
+import io.fabric.sdk.android.Fabric;
+import io.github.prefanatic.cleantap.common.CrashlyticsTree;
 import io.github.prefanatic.cleantap.common.PreferenceKeys;
 import io.github.prefanatic.cleantap.data.RxUntappdApi;
 import io.github.prefanatic.cleantap.injection.Injector;
@@ -35,7 +39,14 @@ public class Application extends SugarApp {
     public void onCreate() {
         super.onCreate();
 
-        Timber.plant(new Timber.DebugTree());
+        CrashlyticsCore core = new CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG)
+                .build();
+        Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+        if (BuildConfig.DEBUG)
+            Timber.plant(new Timber.DebugTree());
+        Timber.plant(new CrashlyticsTree());
 
         Injector.INSTANCE.initApplicationComponent(this);
         Injector.INSTANCE.getApplicationComponent().inject(this);

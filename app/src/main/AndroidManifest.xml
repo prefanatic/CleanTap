@@ -67,6 +67,9 @@
             android:name=".ui.CheckinActivity"
             android:theme="@style/TranslucentActivity"
             android:windowSoftInputMode="adjustResize"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="f86dc1e89d378dbed6d5b2eb84f938b8854970f7" />
     </application>
 
 </manifest>

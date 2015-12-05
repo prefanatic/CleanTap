@@ -61,22 +61,24 @@ public class RxUntappdApi {
                    stats.breweryId = stats.brewery.brewery_id;
                })
                .subscribeOn(Schedulers.io())
-               .observeOn(AndroidSchedulers.mainThread());
+               .observeOn(AndroidSchedulers.mainThread())
+               .doOnError(err -> Timber.e("Search failed"));
     }
 
     public Observable<BeerExtended> getBeerInfo(long beerId) {
         return api.beerInfo(beerId, authOptions, "false")
-                .doOnError(err -> Timber.e(err, "API Failure"))
                 .map(response -> response.response.beer)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(err -> Timber.e("Beer Info failed"));
     }
 
     public Observable<CheckInResponse> checkinBeer(long beerId, String shout, float rating, Double geolat, Double geolng) {
         TimeZone zone = TimeZone.getDefault();
 
         return api.checkInBeer(authOptions, String.valueOf(zone.getRawOffset() / 3600000), zone.getID(), beerId, null, geolat, geolng, shout, String.format("%.2f", rating), null, null, null)
-                .map(response -> response.response);
+                .map(response -> response.response)
+                .doOnError(err -> Timber.e(err, "Check-in failed"));
     }
 
 
